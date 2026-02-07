@@ -1,10 +1,10 @@
 folders:
-  - path: "C:/Users/EST/Desktop"
+  - path: "shell:Desktop"
     max_files: 20
     max_extensions: 8
     max_stale_files: 10
     stale_days: 7
-  - path: "C:/Users/EST/Downloads"
+  - path: "shell:Downloads"
     max_files: 30
     max_extensions: 8
     max_stale_files: 10

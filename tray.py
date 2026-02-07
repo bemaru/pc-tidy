@@ -6,13 +6,11 @@ import threading
 from pathlib import Path
 
 import pystray
-import yaml
 from PIL import Image, ImageDraw
 
+from monitor import CONFIG_PATH, load_config
 from notifier import send_notification
 from rules import FolderReport, evaluate_folder
-
-CONFIG_PATH = Path(__file__).parent / "config.yaml"
 
 AUTOSTART_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 AUTOSTART_VALUE = "DeskNoti"
@@ -35,25 +33,37 @@ LEVEL_LABEL = {
 
 
 # ---------------------------------------------------------------------------
-# Config
-# ---------------------------------------------------------------------------
-
-def load_config() -> dict:
-    with open(CONFIG_PATH, encoding="utf-8") as f:
-        return yaml.safe_load(f)
-
-
-# ---------------------------------------------------------------------------
 # Icon generation
 # ---------------------------------------------------------------------------
 
-def _make_icon(color: tuple[int, int, int]) -> Image.Image:
-    """64x64 원형 아이콘을 생성한다."""
+def _make_icon(status_color: tuple[int, int, int]) -> Image.Image:
+    """64x64 폴더 아이콘 + 우하단 상태 점을 생성한다."""
     size = 64
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    margin = 4
-    draw.ellipse([margin, margin, size - margin, size - margin], fill=color)
+
+    # 폴더 본체 색상
+    body = (66, 165, 245)       # 밝은 파랑
+    body_dark = (33, 150, 243)  # 약간 진한 파랑 (탭)
+
+    # 폴더 탭 (좌상단 작은 돌출)
+    draw.rounded_rectangle([4, 8, 26, 18], radius=3, fill=body_dark)
+    # 폴더 본체
+    draw.rounded_rectangle([4, 16, 56, 50], radius=4, fill=body)
+
+    # 상태 점 (우하단, 테두리 포함)
+    dot_cx, dot_cy, dot_r = 47, 43, 9
+    draw.ellipse(
+        [dot_cx - dot_r - 2, dot_cy - dot_r - 2,
+         dot_cx + dot_r + 2, dot_cy + dot_r + 2],
+        fill=(30, 30, 30),  # 어두운 테두리
+    )
+    draw.ellipse(
+        [dot_cx - dot_r, dot_cy - dot_r,
+         dot_cx + dot_r, dot_cy + dot_r],
+        fill=status_color,
+    )
+
     return img
 
 
