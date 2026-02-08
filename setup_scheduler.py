@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 
-TASK_NAME = "TidyMon_Monitor"
+from brand import APP_NAME
 CONFIG_PATH = Path(__file__).parent / "config.yaml"
 MONITOR_SCRIPT = Path(__file__).parent / "monitor.py"
 
@@ -24,7 +24,7 @@ def register() -> None:
 
     # 기존 작업 삭제 (무시)
     subprocess.run(
-        ["schtasks", "/Delete", "/TN", TASK_NAME, "/F"],
+        ["schtasks", "/Delete", "/TN", APP_NAME, "/F"],
         capture_output=True,
     )
 
@@ -32,7 +32,7 @@ def register() -> None:
         [
             "schtasks",
             "/Create",
-            "/TN", TASK_NAME,
+            "/TN", APP_NAME,
             "/TR", f'"{python_exe}" "{MONITOR_SCRIPT}"',
             "/SC", "MINUTE",
             "/MO", str(interval),
@@ -43,7 +43,7 @@ def register() -> None:
     )
 
     if result.returncode == 0:
-        print(f"작업 '{TASK_NAME}' 등록 완료 ({interval}분 간격)")
+        print(f"작업 '{APP_NAME}' 등록 완료 ({interval}분 간격)")
     else:
         print(f"등록 실패: {result.stderr}")
         sys.exit(1)
@@ -52,13 +52,13 @@ def register() -> None:
 def unregister() -> None:
     """작업 스케줄러에서 해제한다."""
     result = subprocess.run(
-        ["schtasks", "/Delete", "/TN", TASK_NAME, "/F"],
+        ["schtasks", "/Delete", "/TN", APP_NAME, "/F"],
         capture_output=True,
         text=True,
     )
 
     if result.returncode == 0:
-        print(f"작업 '{TASK_NAME}' 해제 완료")
+        print(f"작업 '{APP_NAME}' 해제 완료")
     else:
         print(f"해제 실패: {result.stderr}")
         sys.exit(1)

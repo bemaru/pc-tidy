@@ -1,5 +1,5 @@
 [project]
-name = "tidymon"
+name = "pc-tidy"
 version = "0.2.0"
 description = "Windows 디지털 환경 정리 모니터 (폴더 감시 + 북마크 정리)"
 requires-python = ">=3.11"
@@ -21,6 +21,6 @@ build-backend = "hatchling.build"
 packages = ["."]
 
 [project.scripts]
-tidymon = "monitor:run"
-tidymon-scheduler = "setup_scheduler:register"
-tidymon-tray = "tray:main"
+pc-tidy = "monitor:run"
+pc-tidy-scheduler = "setup_scheduler:register"
+pc-tidy-tray = "tray:main"

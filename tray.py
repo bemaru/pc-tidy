@@ -8,12 +8,12 @@ from pathlib import Path
 import pystray
 from PIL import Image, ImageDraw
 
+from brand import APP_NAME
 from monitor import BOOKMARKS_PATH, CONFIG_PATH, load_config
 from notifier import send_bookmark_notification, send_notification
 from rules import BookmarkReport, FolderReport, evaluate_bookmarks, evaluate_folder
 
 AUTOSTART_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
-AUTOSTART_VALUE = "TidyMon"
 
 LEVEL_COLORS = {
     "clean": (76, 175, 80),      # green
@@ -75,7 +75,7 @@ def _is_autostart_enabled() -> bool:
     import winreg
     try:
         key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, AUTOSTART_KEY, 0, winreg.KEY_READ)
-        winreg.QueryValueEx(key, AUTOSTART_VALUE)
+        winreg.QueryValueEx(key, APP_NAME)
         winreg.CloseKey(key)
         return True
     except FileNotFoundError:
@@ -89,7 +89,7 @@ def _toggle_autostart() -> None:
     if _is_autostart_enabled():
         try:
             key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, AUTOSTART_KEY, 0, winreg.KEY_SET_VALUE)
-            winreg.DeleteValue(key, AUTOSTART_VALUE)
+            winreg.DeleteValue(key, APP_NAME)
             winreg.CloseKey(key)
         except OSError:
             pass
@@ -100,7 +100,7 @@ def _toggle_autostart() -> None:
         cmd = f'"{exe}" "{script}"'
         try:
             key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, AUTOSTART_KEY, 0, winreg.KEY_SET_VALUE)
-            winreg.SetValueEx(key, AUTOSTART_VALUE, 0, winreg.REG_SZ, cmd)
+            winreg.SetValueEx(key, APP_NAME, 0, winreg.REG_SZ, cmd)
             winreg.CloseKey(key)
         except OSError:
             pass
@@ -183,7 +183,7 @@ class TrayApp:
             return
         level = self._worst_level()
         self.icon.icon = _make_icon(LEVEL_COLORS[level])
-        self.icon.title = f"TidyMon - {LEVEL_LABEL[level]}"
+        self.icon.title = f"{APP_NAME} - {LEVEL_LABEL[level]}"
         self.icon.menu = self._build_menu()
 
     # -- background loop --
@@ -265,9 +265,9 @@ class TrayApp:
 
     def run(self) -> None:
         self.icon = pystray.Icon(
-            name="TidyMon",
+            name=APP_NAME,
             icon=_make_icon(LEVEL_COLORS["clean"]),
-            title="TidyMon - 시작 중...",
+            title=f"{APP_NAME} - 시작 중...",
             menu=self._build_menu(),
         )
 

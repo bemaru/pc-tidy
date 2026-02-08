@@ -2,9 +2,8 @@
 
 from winotify import Notification, audio
 
+from brand import APP_NAME
 from rules import BookmarkReport, FolderReport
-
-APP_ID = "TidyMon"
 
 LEVEL_CONFIG = {
     "caution": {
@@ -49,7 +48,7 @@ def send_notification(report: FolderReport) -> None:
     body = "\n".join(body_lines)
 
     toast = Notification(
-        app_id=APP_ID,
+        app_id=APP_NAME,
         title=cfg["title"],
         msg=body,
         duration=cfg["duration"],
@@ -72,7 +71,7 @@ def send_bookmark_notification(report: BookmarkReport) -> None:
     body = "\n".join(body_lines)
 
     toast = Notification(
-        app_id=APP_ID,
+        app_id=APP_NAME,
         title=cfg["title"],
         msg=body,
         duration=cfg["duration"],
